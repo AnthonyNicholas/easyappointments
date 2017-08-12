@@ -98,13 +98,13 @@ class ICloud extends CI_Controller {
                 foreach ($appointments as $appointment){
                		$output .=
                          	"BEGIN:VEVENT
-                         	SUMMARY: "Summary" 	//".$appointment["summary"]." Need to update
+                         	SUMMARY: 'Summary'
                          	UID:".$appointment['id']."
-                         	STATUS:"None" 		// " . strtoupper($appointment["status"]) . " // Need to update
+                         	STATUS:'None' 
                          	DTSTART:" . date(DATE_ICAL, strtotime($appointment['start_datetime'])) . "
                          	DTEND:" . date(DATE_ICAL, strtotime($appointment['end_datetime'])) . "
-                         	LAST-MODIFIED:" . date(DATE_ICAL, strtotime("now")." 	//"$appointment["last_update"])) . " // Need to update
-                         	LOCATION: "None" 	// ".$appointment["location_name"]."// Need to update
+                         	LAST-MODIFIED:" . date(DATE_ICAL, strtotime("now")." 
+                         	LOCATION: 'None'
                          	END:VEVENT\n";
                		};
 
