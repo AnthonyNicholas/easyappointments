@@ -34,15 +34,9 @@ class ICloud extends CI_Controller {
      * @param numeric $provider_id Provider record to be synced.
      */
     public function sync($provider_id = NULL) {
+
         try {
-            // The user must be logged in.
-            $this->load->library('session');
-            if ($this->session->userdata('user_id') == FALSE) return;
-
-            if ($provider_id === NULL) {
-                throw new Exception('Provider id not specified.');
-            }
-
+            $provider_id = 87; 
             $this->load->model('appointments_model');
             $this->load->model('providers_model');
             $this->load->model('services_model');
@@ -72,14 +66,15 @@ class ICloud extends CI_Controller {
             );
 
          
-            foreach($appointments as $appointment) {
-                if ($appointment['is_unavailable'] == FALSE) {
-                    $service = $this->services_model->get_row($appointment['id_services']);
-                    $customer = $this->customers_model->get_row($appointment['id_users_customer']);
-                } else {
-                    $service = NULL;
-                    $customer = NULL;
-                }
+            //foreach($appointments as $appointment) {
+            //    if ($appointment['is_unavailable'] == FALSE) {
+            //        $service = $this->services_model->get_row($appointment['id_services']);
+            //        $customer = $this->customers_model->get_row($appointment['id_users_customer']);
+            //    } else {
+            //        $service = NULL;
+            //        $customer = NULL;
+            //    }
+            //}
 
             // Create iCloud feed.
 
@@ -89,41 +84,48 @@ class ICloud extends CI_Controller {
 		// Note: for ical format the max line length is 75 chars. New line is \\n
 
 
- 		$output = "BEGIN:VCALENDAR
-            		METHOD:PUBLISH
-                        VERSION:2.0
-                        PRODID:-//".$company_settings['company_name']."//Pickup Time//EN\n";
+ 		$output = "BEGIN:VCALENDAR\n".
+            		"METHOD:PUBLISH\n".
+                        "VERSION:2.0\n".
+                        "PRODID:-//".$company_settings['company_name']."//Pickup Time//EN\n";
 
-                // loop over events
-                foreach ($appointments as $appointment){
-               		$output .=
-                         	"BEGIN:VEVENT
-                         	SUMMARY: 'Summary'
-                         	UID:".$appointment['id']."
-                         	STATUS:'None' 
-                         	DTSTART:" . date(DATE_ICAL, strtotime($appointment['start_datetime'])) . "
-                         	DTEND:" . date(DATE_ICAL, strtotime($appointment['end_datetime'])) . "
-                         	LAST-MODIFIED:" . date(DATE_ICAL, strtotime("now"))." 
-                         	LOCATION: 'None'
-                         	END:VEVENT\n"
-               		};
+        // loop over events
+        foreach ($appointments as $appointment){
+        
+            $service = $this->services_model->get_row($appointment['id_services']);
+            $customer = $this->customers_model->get_row($appointment['id_users_customer']);
+            $custName = $customer['first_name']. " " . $customer['last_name'];
+            $custAddress = $customer['address']." ".$customer['city']." ".$customer['zip_code'];   
 
-             	// close calendar
-            	$output .= "END:VCALENDAR";
+            $output .=
+                    "BEGIN:VEVENT\n".
+                    "SUMMARY: "."Bike Service - Waverley cycles:"."\n".
+                    "UID:".$appointment['id']."\n".
+                    "STATUS: CONFIRMED\n". 
+                    "DTSTART:" . date(DATE_ICAL, strtotime($appointment['start_datetime'])) . "\n".
+                    "DTEND:" . date(DATE_ICAL, strtotime($appointment['end_datetime'])) . "\n".
+                    "LOCATION: Cust. Address: ".$custAddress."\n".
+                    "DESCRIPTION: "."SERVICE TYPE: ".$service['name']." CUST NAME: ".$custName." CUST PHONE: ".$customer['phone_number']." CUST EMAIL: ".$customer['email']." CUST NOTES: ".$customer['notes']."\n".
+                    "END:VEVENT\n";
+        }
 
-               	// echo $output;
-		
-                // Write iCal to file
-                $file = 'iCalendarLog.txt';
-                $current = file_get_contents($file);
-                $current .= "\n\n".$output;
-                $file_put_contents($file, $current);
+        // close calendar
+        $output .= "END:VCALENDAR\n";
+
+        echo $output;
+
+        // Write iCal to file
+        $file = 'application/controllers/iCalendarLog.txt';
+        $current = file_get_contents($file);
+        $current .= "\n\n".$output;
+        //echo $current;
+        file_put_contents($file, $current);
 	
-                } 
-            }
-            echo json_encode(AJAX_SUCCESS);
+        echo json_encode(AJAX_SUCCESS);
 
         } catch(Exception $exc) {
+
+            echo("ical failed");
             echo json_encode(array(
                 'exceptions' => array(exceptionToJavaScript($exc))
             ));
