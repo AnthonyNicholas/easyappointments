@@ -33,10 +33,14 @@ class ICloud extends CI_Controller {
      *
      * @param numeric $provider_id Provider record to be synced.
      */
-    public function sync($provider_id = NULL) {
+    public function sync($provider_id = 87, $securityCode = "NULL") {
+
+        if ((string)$securityCode != "4Ho8ZBV4hPBe"){
+            exit();
+        }
 
         try {
-            $provider_id = 87; 
+            // $provider_id = 87; 
             $this->load->model('appointments_model');
             $this->load->model('providers_model');
             $this->load->model('services_model');
@@ -105,7 +109,7 @@ class ICloud extends CI_Controller {
                     "DTSTART:" . date(DATE_ICAL, strtotime($appointment['start_datetime'])) . "\n".
                     "DTEND:" . date(DATE_ICAL, strtotime($appointment['end_datetime'])) . "\n".
                     "LOCATION: Cust. Address: ".$custAddress."\n".
-                    "DESCRIPTION: "."SERVICE TYPE: ".$service['name']." CUST NAME: ".$custName." CUST PHONE: ".$customer['phone_number']." CUST EMAIL: ".$customer['email']." CUST NOTES: ".$customer['notes']."\n".
+                    "DESCRIPTION:"."SERVICE TYPE: ".$service['name']."\\nCUST NAME: ".$custName."\\nCUST PHONE: ".$customer['phone_number']."\\nCUST EMAIL: ".$customer['email']."\\nCUST NOTES: ".$customer['notes']."\n".
                     "END:VEVENT\n";
         }
 
