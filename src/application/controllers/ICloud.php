@@ -103,21 +103,21 @@ class ICloud extends CI_Controller {
                          	STATUS:'None' 
                          	DTSTART:" . date(DATE_ICAL, strtotime($appointment['start_datetime'])) . "
                          	DTEND:" . date(DATE_ICAL, strtotime($appointment['end_datetime'])) . "
-                         	LAST-MODIFIED:" . date(DATE_ICAL, strtotime("now")." 
+                         	LAST-MODIFIED:" . date(DATE_ICAL, strtotime("now"))." 
                          	LOCATION: 'None'
-                         	END:VEVENT\n";
+                         	END:VEVENT\n"
                		};
 
-                         // close calendar
-                         $output .= "END:VCALENDAR";
+             	// close calendar
+            	$output .= "END:VCALENDAR";
 
-                         echo $output;
+               	// echo $output;
 		
-		// Write iCal to file
-		$file = 'iCalendarLog.txt';
-		$current = file_get_contents($file);
-		$current .= "\n\n".$output;
-		file_put_contents($file, $current);
+                // Write iCal to file
+                $file = 'iCalendarLog.txt';
+                $current = file_get_contents($file);
+                $current .= "\n\n".$output;
+                $file_put_contents($file, $current);
 	
                 } 
             }
