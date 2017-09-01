@@ -19,6 +19,15 @@ CREATE TABLE IF NOT EXISTS `ea_appointments` (
   KEY `id_users_provider` (`id_users_provider`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=63 ;
 
+CREATE TABLE IF NOT EXISTS `ea_jobs` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `id_appointments` bigint(20) unsigned DEFAULT NULL,
+  `notes` text,
+  `finalised` tinyint(4) DEFAULT '0', 
+  PRIMARY KEY (`id`),
+  KEY `id_appointments` (`id_appointments`)
+  
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=63 ;
 
 CREATE TABLE IF NOT EXISTS `ea_roles` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -26,6 +35,7 @@ CREATE TABLE IF NOT EXISTS `ea_roles` (
   `slug` varchar(256) DEFAULT NULL,
   `is_admin` tinyint(4) DEFAULT NULL COMMENT '0',
   `appointments` int(4) DEFAULT NULL COMMENT '0',
+  `jobs` int(4) DEFAULT NULL COMMENT '0',
   `customers` int(4) DEFAULT NULL COMMENT '0',
   `services` int(4) DEFAULT NULL COMMENT '0',
   `users` int(4) DEFAULT NULL COMMENT '0',
@@ -123,6 +133,8 @@ ALTER TABLE `ea_appointments`
   ADD CONSTRAINT `ea_appointments_ibfk_3` FOREIGN KEY (`id_services`) REFERENCES `ea_services` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `ea_appointments_ibfk_4` FOREIGN KEY (`id_users_provider`) REFERENCES `ea_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
+ALTER TABLE `ea_jobs`
+  ADD CONSTRAINT `ea_jobs_ibfk_2` FOREIGN KEY (`id_appointments`) REFERENCES `ea_appointments` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE `ea_secretaries_providers`
   ADD CONSTRAINT `fk_ea_secretaries_providers_1` FOREIGN KEY (`id_users_secretary`) REFERENCES `ea_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -146,11 +158,11 @@ ALTER TABLE `ea_user_settings`
   ADD CONSTRAINT `ea_user_settings_ibfk_1` FOREIGN KEY (`id_users`) REFERENCES `ea_users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 
-INSERT INTO `ea_roles` (`id`, `name`, `slug`, `is_admin`, `appointments`, `customers`, `services`, `users`, `system_settings`, `user_settings`) VALUES
-(1, 'Administrator', 'admin', 1, 15, 15, 15, 15, 15, 15),
-(2, 'Provider', 'provider', 0, 15, 15, 0, 0, 0, 15),
-(3, 'Customer', 'customer', 0, 0, 0, 0, 0, 0, 0),
-(4, 'Secretary', 'secretary', 0, 15, 15, 0, 0, 0, 15);
+INSERT INTO `ea_roles` (`id`, `name`, `slug`, `is_admin`, `appointments`, `jobs`, `customers`, `services`, `users`, `system_settings`, `user_settings`) VALUES
+(1, 'Administrator', 'admin', 1, 15, 15, 15, 15, 15, 15, 15),
+(2, 'Provider', 'provider', 0, 15, 15, 15, 0, 0, 0, 15),
+(3, 'Customer', 'customer', 0, 0, 0, 0, 0, 0, 0, 0),
+(4, 'Secretary', 'secretary', 0, 15, 15, 15, 0, 0, 0, 15);
 
 INSERT INTO `ea_settings` (`name`, `value`) VALUES
 ('company_working_plan', '{"monday":{"start":"09:00","end":"18:00","breaks":[{"start":"11:20","end":"11:30"},{"start":"14:30","end":"15:00"}]},"tuesday":{"start":"09:00","end":"18:00","breaks":[{"start":"11:20","end":"11:30"},{"start":"14:30","end":"15:00"}]},"wednesday":{"start":"09:00","end":"18:00","breaks":[{"start":"11:20","end":"11:30"},{"start":"14:30","end":"15:00"}]},"thursday":{"start":"09:00","end":"18:00","breaks":[{"start":"11:20","end":"11:30"},{"start":"14:30","end":"15:00"}]},"friday":{"start":"09:00","end":"18:00","breaks":[{"start":"11:20","end":"11:30"},{"start":"14:30","end":"15:00"}]},"saturday":{"start":"09:00","end":"18:00","breaks":[{"start":"11:20","end":"11:30"},{"start":"14:30","end":"15:00"}]},"sunday":{"start":"09:00","end":"18:00","breaks":[{"start":"11:20","end":"11:30"},{"start":"14:30","end":"15:00"}]}}'),

@@ -102,6 +102,17 @@
                     </a>
                 </li>
 
+                <?php // JOBS MENU ITEM
+                      // ------------------------------------------------------ ?>
+                <?php $hidden = ($privileges[PRIV_JOBS]['view'] == TRUE) ? '' : 'hidden'; ?>
+                <?php $active = ($active_menu == PRIV_JOBS) ? 'active' : ''; ?>
+                <li class="<?php echo $active . $hidden; ?>">
+                    <a href="<?php echo site_url('backend/jobs'); ?>" class="menu-item"
+                            title="<?php echo $this->lang->line('manage_jobs_hint'); ?>">
+                        <?php echo $this->lang->line('jobs'); ?>
+                    </a>
+                </li>
+
                 <?php // CUSTOMERS MENU ITEM
                       // ------------------------------------------------------ ?>
                 <?php $hidden = ($privileges[PRIV_CUSTOMERS]['view'] == TRUE) ? '' : 'hidden'; ?>
