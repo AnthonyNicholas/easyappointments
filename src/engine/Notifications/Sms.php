@@ -16,7 +16,6 @@ namespace EA\Engine\Notifications;
 use \EA\Engine\Types\Text;
 use \EA\Engine\Types\NonEmptyText;
 use \EA\Engine\Types\Url;
-use \EA\Engine\Types\Email as EmailAddress;
 
 /**
  * SMS Notifications Class
@@ -88,182 +87,23 @@ class Sms {
      * to the appointment record.
      * @param \EA\Engine\Types\Email $recipientEmail The recipient sms address.
      */
-    public function sendAppointmentDetails(array $appointment, array $provider, array $service,
-                                           array $customer, array $company, Text $title, Text $message, Url $appointmentLink,
-                                           EmailAddress $recipientEmail) {
+    public function sendNotification(array $customer, Text $messageText) {
 
-        // Prepare template replace array.
-        $replaceArray = array(
-            '$sms_title' => $title->get(),
-            '$sms_message' => $message->get(),
-            '$appointment_service' => $service['name'],
-            '$appointment_provider' => $provider['first_name'] . ' ' . $provider['last_name'],
-            '$appointment_start_date' => date('d/m/Y H:i', strtotime($appointment['start_datetime'])),
-            '$appointment_end_date' => date('d/m/Y H:i', strtotime($appointment['end_datetime'])),
-            '$appointment_link' => $appointmentLink->get(),
-            '$company_link' => $company['company_link'],
-            '$company_name' => $company['company_name'],
-            '$customer_name' => $customer['first_name'] . ' ' . $customer['last_name'],
-            '$customer_sms' => $customer['sms'],
-            '$customer_phone' => $customer['phone_number'],
-            '$customer_address' => $customer['address'],
-
-            // Translations
-            'Appointment Details' => $this->framework->lang->line('appointment_details_title'),
-            'Service' => $this->framework->lang->line('service'),
-            'Provider' => $this->framework->lang->line('provider'),
-            'Start' => $this->framework->lang->line('start'),
-            'End' => $this->framework->lang->line('end'),
-            'Customer Details' => $this->framework->lang->line('customer_details_title'),
-            'Name' => $this->framework->lang->line('name'),
-            'Email' => $this->framework->lang->line('sms'),
-            'Phone' => $this->framework->lang->line('phone'),
-            'Address' => $this->framework->lang->line('address'),
-            'Appointment Link' => $this->framework->lang->line('appointment_link_title')
+        // https://twilio.github.io/twilio-php/
+        $texter = new \Twilio\Rest\Client($this->config['twilio_sid'], $this->config['twilio_token']);
+        $message = $texter->messages->create(
+            $customer['phone_number'], // we replace with customer number
+            array(
+                'from' => '+61451562962',
+                'body' => $messageText->get()
+            )
         );
-
-        $html = file_get_contents(__DIR__ . '/../../application/views/smss/appointment_details.php');
-        $html = $this->_replaceTemplateVariables($replaceArray, $html);
-
-        $mailer = $this->_createMailer();
-
-        $mailer->From = $company['company_sms'];
-        $mailer->FromName = $company['company_name'];
-        $mailer->AddAddress($recipientEmail->get());
-        $mailer->Subject = $title->get();
-        $mailer->Body    = $html;
-
-        if (!$mailer->Send()) {
-            throw new \RuntimeException('Email could not been sent. Mailer Error (Line ' . __LINE__ . '): ' 
-                    . $mailer->ErrorInfo);
+        
+        // if no id returned
+        if (!$message->sid > 0) {
+            throw new \RuntimeException('SMS could not been sent. Error (Line ' . __LINE__ . '): ' 
+                    . $message->sid);
         }
     }
 
-    /**
-     * Send an sms notification to both provider and customer on appointment removal.
-     *
-     * Whenever an appointment is cancelled or removed, both the provider and customer
-     * need to be informed. This method sends the same sms twice.
-     *
-     * <strong>IMPORTANT!</strong> This method's arguments should be taken
-     * from database before the appointment record is deleted.
-     *
-     * @param array $appointment The record data of the removed appointment.
-     * @param array $provider The record data of the appointment provider.
-     * @param array $service The record data of the appointment service.
-     * @param array $customer The record data of the appointment customer.
-     * @param array $company Some settings that are required for this function. By now this array must contain 
-     * the following values: "company_link", "company_name", "company_sms".
-     * @param \EA\Engine\Types\Email $recipientEmail The sms address of the sms recipient.
-     * @param \EA\Engine\Types\Text $reason The reason why the appointment is deleted.
-     */
-    public function sendDeleteAppointment(array $appointment, array $provider,
-                                          array $service, array $customer, array $company, EmailAddress $recipientEmail,
-                                          Text $reason) {
-        // Prepare sms template data. 
-        $replaceArray = array(
-            '$sms_title' => $this->framework->lang->line('appointment_cancelled_title'),
-            '$sms_message' => $this->framework->lang->line('appointment_removed_from_schedule'),
-            '$appointment_service' => $service['name'],
-            '$appointment_provider' => $provider['first_name'] . ' ' . $provider['last_name'],
-            '$appointment_date' => date('d/m/Y H:i', strtotime($appointment['start_datetime'])),
-            '$appointment_duration' => $service['duration'] . ' minutes',
-            '$company_link' => $company['company_link'],
-            '$company_name' => $company['company_name'],
-            '$customer_name' => $customer['first_name'] . ' ' . $customer['last_name'],
-            '$customer_sms' => $customer['sms'],
-            '$customer_phone' => $customer['phone_number'],
-            '$customer_address' => $customer['address'],
-            '$reason' => $reason->get(),
-
-            // Translations
-            'Appointment Details' => $this->framework->lang->line('appointment_details_title'),
-            'Service' => $this->framework->lang->line('service'),
-            'Provider' => $this->framework->lang->line('provider'),
-            'Date' => $this->framework->lang->line('start'),
-            'Duration' => $this->framework->lang->line('duration'),
-            'Customer Details' => $this->framework->lang->line('customer_details_title'),
-            'Name' => $this->framework->lang->line('name'),
-            'Email' => $this->framework->lang->line('sms'),
-            'Phone' => $this->framework->lang->line('phone'),
-            'Address' => $this->framework->lang->line('address'),
-            'Reason' => $this->framework->lang->line('reason')
-        );
-
-        $html = file_get_contents(__DIR__ . '/../../application/views/smss/delete_appointment.php');
-        $html = $this->_replaceTemplateVariables($replaceArray, $html);
-
-        $mailer = $this->_createMailer();
-
-        // Send sms to recipient.
-        $mailer->From = $company['company_sms'];
-        $mailer->FromName = $company['company_name'];
-        $mailer->AddAddress($recipientEmail->get()); // "Name" argument crushes the phpmailer class.
-        $mailer->Subject = $this->framework->lang->line('appointment_cancelled_title');
-        $mailer->Body = $html;
-
-        if (!$mailer->Send()) {
-            throw new \RuntimeException('Email could not been sent. Mailer Error (Line ' . __LINE__ . '): ' 
-                    . $mailer->ErrorInfo);
-        }
-    }
-
-    /**
-     * This method sends an sms with the new password of a user.
-     *
-     * @param \EA\Engine\Types\NonEmptyText $password Contains the new password.
-     * @param \EA\Engine\Types\Email $recipientEmail The receiver's sms address.
-     * @param array $company The company settings to be included in the sms.
-     */
-    public function sendPassword(NonEmptyText $password, EmailAddress $recipientEmail, array $company) {
-        $replaceArray = array(
-            '$sms_title' => $this->framework->lang->line('new_account_password'),
-            '$sms_message' => $this->framework->lang->line('new_password_is'),
-            '$company_name' => $company['company_name'],
-            '$company_sms' => $company['company_sms'],
-            '$company_link' => $company['company_link'],
-            '$password' => '<strong>' . $password->get() . '</strong>'
-        );
-
-        $html = file_get_contents(__DIR__ . '/../../application/views/smss/new_password.php');
-        $html = $this->_replaceTemplateVariables($replaceArray, $html);
-
-        $mailer = $this->_createMailer();
-
-        $mailer->From = $company['company_sms'];
-        $mailer->FromName = $company['company_name'];
-        $mailer->AddAddress($recipientEmail->get()); // "Name" argument crushes the phpmailer class.
-        $mailer->Subject = $this->framework->lang->line('new_account_password');
-        $mailer->Body = $html;
-
-        if (!$mailer->Send()) {
-            throw new \RuntimeException('Email could not been sent. Mailer Error (Line ' . __LINE__ . '): ' 
-                . $mailer->ErrorInfo);
-        }
-    }
-
-    /**
-     * Create PHP Mailer Instance
-     *
-     * @return \PHPMailer
-     */
-    protected function _createMailer()
-    {
-        $mailer = new \PHPMailer;
-
-        if ($this->config['protocol'] === 'smtp') {
-            $mailer->isSMTP();
-            $mailer->Host = $this->config['smtp_host'];
-            $mailer->SMTPAuth = true;
-            $mailer->Username = $this->config['smtp_user'];
-            $mailer->Password = $this->config['smtp_pass'];
-            $mailer->SMTPSecure = $this->config['smtp_crypto'];
-            $mailer->Port = $this->config['smtp_port'];
-        }
-
-        $mailer->IsHTML($this->config['mailtype'] === 'html');
-        $mailer->CharSet = $this->config['charset'];
-
-        return $mailer;
-    }
 }
