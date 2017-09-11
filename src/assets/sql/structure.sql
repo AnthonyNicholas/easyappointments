@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS `ea_jobs` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `id_appointments` bigint(20) unsigned DEFAULT NULL,
   `notes` text,
-  `finalised` tinyint(4) DEFAULT '0', 
+  `finalised` tinyint(4) DEFAULT '0',
+  `smsSentDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_appointments` (`id_appointments`)
   

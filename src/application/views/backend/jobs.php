@@ -24,7 +24,7 @@
     };
 
     $(document).ready(function() {
-        BackendCustomers.initialize(true);
+        BackendJobs.initialize(true);
     });
 </script>
 
@@ -50,21 +50,21 @@
     	<div class="record-details col-xs-12 col-sm-7">
             <div class="btn-toolbar">
                 <div id="add-edit-delete-group" class="btn-group">
-                    <?php if ($privileges[PRIV_CUSTOMERS]['add'] == TRUE) { ?>
+                    <?php if ($privileges[PRIV_JOBS]['add'] == TRUE) { ?>
                     <button id="add-job" class="btn btn-primary">
                         <span class="glyphicon glyphicon-plus"></span>
                         <?php echo $this->lang->line('add'); ?>
                     </button>
                     <?php } ?>
 
-                    <?php if ($privileges[PRIV_CUSTOMERS]['edit'] == TRUE) { ?>
+                    <?php if ($privileges[PRIV_JOBS]['edit'] == TRUE) { ?>
                     <button id="edit-job" class="btn btn-default" disabled="disabled">
                         <span class="glyphicon glyphicon-pencil"></span>
                         <?php echo $this->lang->line('edit'); ?>
                     </button>
                     <?php }?>
 
-                    <?php if ($privileges[PRIV_CUSTOMERS]['delete'] == TRUE) { ?>
+                    <?php if ($privileges[PRIV_JOBS]['delete'] == TRUE) { ?>
                     <button id="delete-job" class="btn btn-default" disabled="disabled">
                         <span class="glyphicon glyphicon-remove"></span>
                         <?php echo $this->lang->line('delete'); ?>
@@ -84,6 +84,7 @@
                 </div>
             </div>
 
+            <input id="customer-id" type="hidden" />
             <input id="job-id" type="hidden" />
 
             <div class="row">
@@ -97,8 +98,12 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="sms-notif"><?php echo 'Send SMS'; ?></label>
-                        <input type="button" id="sms-notif" class="form-control" value="send-sms" >
+                        <button id="sms-notif" class="btn btn-default" disabled>
+                            <?php echo "SMS notification"; ?>
+                        </button>
+                        <button id="finalise-job" class="btn btn-primary" disabled>
+                            <?php echo "Finalise Job"; ?>
+                        </button>
                     </div>
 
                     <center><em id="form-message" class="text-error">

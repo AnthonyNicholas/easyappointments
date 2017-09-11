@@ -32,10 +32,8 @@ class Jobs_Model extends CI_Model {
      * @return int Returns the job id.
      */
     public function add($job) {
-        // Validate the job data before doing anything.
-        $this->validate($job);
 
-        // :: CHECK IF JOB ALREADY EXIST (FROM EMAIL).
+        // :: CHECK IF JOB ALREADY EXIST
         if ($this->exists($job) && !isset($job['id'])) {
         	// Find the job id from the database.
         	$job['id'] = $this->find_record_id($job);
@@ -63,14 +61,14 @@ class Jobs_Model extends CI_Model {
      */
     public function exists($job) {
         if (!isset($job['id'])) {
-            throw new Exception('Job\'s id is not provided.');
+            return false;
         }
 
         // This method shouldn't depend on another method of this class.
         $num_rows = $this->db
                 ->select('*')
                 ->from('ea_jobs')
-                ->where('id', $jobs['id'])
+                ->where('id', $job['id'])
                 ->get()->num_rows();
 
         return ($num_rows > 0) ? TRUE : FALSE;
@@ -87,16 +85,6 @@ class Jobs_Model extends CI_Model {
         // Before inserting the job we need to get the job's role id
         // from the database and assign it to the new record as a foreign key.
       
-       /* 
-       $job_role_id = $this->db
-                ->select('id')
-                ->from('ea_roles')
-                ->where('slug', DB_SLUG_JOB)
-                ->get()->row()->id;
-
-        $job['id_roles'] = $job_role_id; 
-        */
-
         if (!$this->db->insert('ea_jobs', $job)) {
             throw new Exception('Could not insert job into the database.');
         }
@@ -129,23 +117,6 @@ class Jobs_Model extends CI_Model {
         return intval($job['id']);
     }
 
-
-    /**
-     * Validate job data before the insert or update operation is executed.
-     *
-     * @param array $job Contains the job data.
-     * @return bool Returns the validation result.
-     */
-    public function validate($job) {
-        $this->load->helper('data_validation');
-
-        // If a job id is provided, check whether the record
-        // exist in the database.
-                        
-        $this->exists($job);
-        
-        return TRUE;
-    }
 
     /**
      * Delete an existing job record from the database.
@@ -228,19 +199,17 @@ class Jobs_Model extends CI_Model {
      */
     
     public function get_batch($where_clause = '') {
-        return $this->db->get('ea_users')->result_array();
-    }
     
+        $this->db->select('ea_jobs.*, u.id AS user_id');
+        $this->db->from('ea_jobs');
+        $this->db->join('ea_appointments a', 'ea_jobs.id_appointments = a.id', 'left outer');
+        $this->db->join('ea_users u', 'a.id_users_customer = u.id', 'left outer');
+        if (!empty($where_clause))
+            $this->db->where($where_clause);
+        $this->db->order_by('a.book_datetime', 'DESC');
+        return $this->db->get()->result_array();
+    }
 
-    /**
-     * Get the jobs role id from the database.
-     *
-     * @return int Returns the role id for the job records.
-     */
-    
-    public function get_jobs_role_id() {
-        return $this->db->get_where('ea_roles', array('slug' => DB_SLUG_JOB))->row()->id;
-    }
 }
 
 /* End of file Jobs_model.php */
