@@ -146,6 +146,12 @@ window.FrontendBook = window.FrontendBook || {};
                     .trigger('change');
             }
 
+            // If both dropdowns are disabled, we can skip this screen
+            if ($selectProvider.prop('disabled') && $selectService.prop('disabled')) {
+                $('.button-next').trigger( 'click' );
+            }
+                
+
         }
     };
 
