@@ -54,6 +54,41 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
         });
 
         /**
+         * Event: Popover Confirm Button "Click"
+         *
+         * confirms an appointment and send notification
+         */
+        $calendarPage.on('click', '.confirm-popover', function() {
+            $(this).parents().eq(2).remove(); // Hide the popover
+
+            var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_confirm_appointment';
+            var postData = {
+                csrfToken: GlobalVariables.csrfToken,
+                id: lastFocusedEventData.data.id
+            };
+
+            $.post(postUrl, postData, function(response) {
+                $('#message_box').dialog('close');
+
+                if (response.exceptions) {
+                    response.exceptions = GeneralFunctions.parseExceptions(response.exceptions);
+                    GeneralFunctions.displayMessageBox(GeneralFunctions.EXCEPTIONS_TITLE, GeneralFunctions.EXCEPTIONS_MESSAGE);
+                    $('#message_box').append(GeneralFunctions.exceptionsToHtml(response.exceptions));
+                    return;
+                }
+
+                if (response.warnings) {
+                    response.warnings = GeneralFunctions.parseExceptions(response.warnings);
+                    GeneralFunctions.displayMessageBox(GeneralFunctions.WARNINGS_TITLE, GeneralFunctions.WARNINGS_MESSAGE);
+                    $('#message_box').append(GeneralFunctions.exceptionsToHtml(response.warnings));
+                }
+
+                // Refresh calendar event items.
+                $('#select-filter-item').trigger('change');
+            }, 'json').fail(GeneralFunctions.ajaxFailureHandler);
+        });
+
+        /**
          * Event: Popover Edit Button "Click"
          *
          * Enables the edit dialog of the selected calendar event.
@@ -323,6 +358,10 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                         + event.data['customer']['first_name'] + ' '
                         + event.data['customer']['last_name']
                         + '<hr>' +
+                    '<center>' +
+                        '<button class="confirm-popover btn btn-success' + displayEdit + '">' + EALang['confirm'] + '</button>' +
+                    '</center>' +
+                    '<br>' +
                     '<center>' +
                         '<button class="edit-popover btn btn-primary ' + displayEdit + '">' + EALang['edit'] + '</button>' +
                         '<button class="delete-popover btn btn-danger ' + displayDelete + '">' + EALang['delete'] + '</button>' +

@@ -201,6 +201,82 @@ class Backend_api extends CI_Controller {
     }
 
     /**
+     * [AJAX] Confirm appointment
+     *
+     * @param array $_POST['id'] 
+     */
+    public function ajax_confirm_appointment() {
+        try {
+        	$this->load->model('appointments_model');
+        	$this->load->model('providers_model');
+        	$this->load->model('services_model');
+        	$this->load->model('customers_model');
+        	$this->load->model('settings_model');
+
+            $appointment = $this->appointments_model->get_row($_POST['id']);
+            $provider = $this->providers_model->get_row($appointment['id_users_provider']);
+            $customer = $this->customers_model->get_row($appointment['id_users_customer']);
+            $service = $this->services_model->get_row($appointment['id_services']);
+
+            $company_settings = array(
+            	'company_name' => $this->settings_model->get_setting('company_name'),
+            	'company_link' => $this->settings_model->get_setting('company_link'),
+            	'company_email' => $this->settings_model->get_setting('company_email')
+            );
+
+            // Mark appointment as confirmed
+            $appointment['is_confirmed'] = 1;
+            $this->appointments_model->add($appointment);
+
+            // :: SEND EMAIL NOTIFICATIONS TO PROVIDER AND CUSTOMER
+            try {
+                $this->config->load('email'); 
+                $email = new \EA\Engine\Notifications\Email($this, $this->config->config);
+
+                $send_provider = $this->providers_model
+                            ->get_setting('notifications', $provider['id']);
+
+                    $customer_title = new Text($this->lang->line('appointment_confirmed'));
+                    $customer_message = new Text($this->lang->line('appointment_confirmation_message'));
+                    $provider_title = new Text($this->lang->line('appointment_added_to_your_plan'));
+                    $provider_message = new Text($this->lang->line('appointment_link_description'));
+
+                $customer_link = new Url(site_url('appointments/index/' . $appointment['hash']));
+                $provider_link = new Url(site_url('backend/index/' . $appointment['hash']));
+
+                $send_customer = $this->settings_model->get_setting('customer_notifications');
+
+				if ((bool)$send_customer === TRUE) {
+                    $email->sendAppointmentDetails($appointment, $provider,
+                            $service, $customer, $company_settings, $customer_title,
+                            $customer_message, $customer_link, new Email($customer['email']));
+                }
+
+                if ($send_provider == TRUE) {
+                    $email->sendAppointmentDetails($appointment, $provider,
+                            $service, $customer, $company_settings, $provider_title,
+                            $provider_message, $provider_link, new Email($provider['email']));
+                }
+
+            } catch(Exception $exc) {
+                $warnings[] = exceptionToJavaScript($exc);
+            }
+
+            if (!isset($warnings)) {
+                echo json_encode(AJAX_SUCCESS);
+            } else {
+                echo json_encode(array(
+                    'warnings' => $warnings
+                ));
+            }
+        } catch(Exception $exc) {
+            echo json_encode(array(
+                'exceptions' => array(exceptionToJavaScript($exc))
+            ));
+        }
+    }
+
+    /**
      * [AJAX] Save appointment changes that are made from the backend calendar page.
      *
      * @param array $_POST['appointment_data'] (OPTIONAL) Array with the appointment data.

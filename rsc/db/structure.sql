@@ -15,6 +15,7 @@ CREATE TABLE `ea_appointments` (
   `notes` text,
   `hash` text,
   `is_unavailable` tinyint(4) DEFAULT '0',
+  `is_confirmed` tinyint(4) DEFAULT '0',
   `id_users_provider` bigint(20) UNSIGNED DEFAULT NULL,
   `id_users_customer` bigint(20) UNSIGNED DEFAULT NULL,
   `id_services` bigint(20) UNSIGNED DEFAULT NULL,
