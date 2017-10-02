@@ -40,7 +40,6 @@ class ICloud extends CI_Controller {
         }
 
         try {
-            // $provider_id = 87; 
             $this->load->model('appointments_model');
             $this->load->model('providers_model');
             $this->load->model('services_model');
@@ -56,8 +55,7 @@ class ICloud extends CI_Controller {
             $end = strtotime('+' . $sync_future_days . ' days', strtotime(date('Y-m-d')));
 
             $where_clause = array(
-                'start_datetime >=' => date('Y-m-d H:i:s', $start),
-                'end_datetime <=' => date('Y-m-d H:i:s', $end),
+                'start_datetime >=' => gmdate('Y-m-d H:i:s', $start),
                 'id_users_provider' => $provider['id']
             );
 
@@ -68,17 +66,6 @@ class ICloud extends CI_Controller {
                 'company_link' => $this->settings_model->get_setting('company_link'),
                 'company_email' => $this->settings_model->get_setting('company_email')
             );
-
-         
-            //foreach($appointments as $appointment) {
-            //    if ($appointment['is_unavailable'] == FALSE) {
-            //        $service = $this->services_model->get_row($appointment['id_services']);
-            //        $customer = $this->customers_model->get_row($appointment['id_users_customer']);
-            //    } else {
-            //        $service = NULL;
-            //        $customer = NULL;
-            //    }
-            //}
 
             // Create iCloud feed.
 
