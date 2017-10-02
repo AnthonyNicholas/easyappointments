@@ -144,8 +144,12 @@
                     <div id="form-message" class="alert" style="display:none;"></div>
 
                     <div class="form-group">
-                        <div id="cust_details"> Customer Details go here </div>
-                        <label for="cust_notes"><?php echo $this->lang->line('cust_notes'); ?></label>
+                        <div id="cust_name"></div>
+                        <div id="cust_address"></div>
+                        <div id="cust_email"></div>
+                        <div id="cust_phone"></div>
+
+                        <label for="cust_notes"><b><?php echo $this->lang->line('cust_notes'); ?>:</b></label>
                         <textarea id="cust_notes" rows="4" class="form-control"></textarea>
                     </div>
 >>>>>>> added customer notes to job page:src/application/views/backend/jobs.php
