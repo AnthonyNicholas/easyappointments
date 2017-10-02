@@ -295,6 +295,7 @@
      *
      * @param {Object} customer Contains the customer record data.
      */
+<<<<<<< cec2706a1bd39e677960b841051c922c34644646:src/assets/js/backend_customers_helper.js
     CustomersHelper.prototype.display = function(customer) {
         $('#customer-id').val(customer.id);
         $('#first-name').val(customer.first_name);
@@ -309,6 +310,22 @@
         $('#customer-appointments').data('jsp').destroy();
         $('#customer-appointments').empty();
         $.each(customer.appointments, function(index, appointment) {
+=======
+    JobsHelper.prototype.display = function(job) {
+        $('#job-id').val(job.id);
+        $('#customer-id').val(job.customer.id);
+        $('#first-name').val(job.customer.first_name);
+        $('#last-name').val(job.customer.last_name);
+        $('#email').val(job.customer.email);
+        $('#phone-number').val(job.customer.phone_number);
+        $('#address').val(job.customer.address);
+        $('#city').val(job.customer.city);
+        $('#zip-code').val(job.customer.zip_code);
+        $('#notes').val(job.notes);
+        $('#cust_notes').val(job.customer.notes);
+        
+        $.each(job.appointments, function(index, appointment) {
+>>>>>>> added customer notes to job page:src/assets/js/backend_jobs_helper.js
             var start = GeneralFunctions.formatDate(Date.parse(appointment.start_datetime), GlobalVariables.dateFormat, true);
             var end = GeneralFunctions.formatDate(Date.parse(appointment.end_datetime), GlobalVariables.dateFormat, true);
             var html =

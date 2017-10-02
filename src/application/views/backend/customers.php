@@ -88,7 +88,7 @@
 
             <div class="row">
                 <div class="col-md-6" style="margin-left: 0;">
-                    <h3><?php echo $this->lang->line('details'); ?></h3>
+                    <h3><?php echo $this->lang->line('job_notes'); ?></h3>
                     <div id="form-message" class="alert" style="display:none;"></div>
 
                     <div class="form-group">
@@ -134,11 +134,21 @@
                     <center><em id="form-message" class="text-error">
                         <?php echo $this->lang->line('fields_are_required'); ?></em></center>
                 </div>
-
                 <div class="col-md-5">
+<<<<<<< cec2706a1bd39e677960b841051c922c34644646:src/application/views/backend/customers.php
                     <h3><?php echo $this->lang->line('appointments'); ?></h3>
                     <div id="customer-appointments"></div>
                     <div id="appointment-details"></div>
+=======
+                    <h3><?php echo $this->lang->line('cust_details'); ?></h3>
+                    <div id="form-message" class="alert" style="display:none;"></div>
+
+                    <div class="form-group">
+                        <div id="cust_details"> Customer Details go here </div>
+                        <label for="cust_notes"><?php echo $this->lang->line('cust_notes'); ?></label>
+                        <textarea id="cust_notes" rows="4" class="form-control"></textarea>
+                    </div>
+>>>>>>> added customer notes to job page:src/application/views/backend/jobs.php
                 </div>
             </div>
     	</div>

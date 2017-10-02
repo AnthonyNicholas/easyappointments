@@ -282,3 +282,7 @@ $lang['availabilities_type'] = 'Availabilities Type';
 $lang['flexible'] = 'Flexible';
 $lang['fixed'] = 'Fixed';
 $lang['attendants_number'] = 'Attendants Number';
+$lang['job_notes'] = 'Job Notes';
+$lang['cust_notes'] = 'Customer Notes';
+$lang['cust_details'] = 'Customer Details';
+
