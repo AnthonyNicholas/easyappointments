@@ -171,6 +171,7 @@
             if (!instance.validate(job)) return;
 
             instance.save(job);
+            Backend.displayNotification(EALang['job_saved']);
         });
 
         /**
@@ -338,22 +339,22 @@
             // Validate required fields.
             var missingRequired = false;
 
-            $('.required').each(function() {
-                if ($(this).val() == '') {
-                    $(this).css('border', '2px solid red');
-                    missingRequired = true;
-                }
-            });
+           // $('.required').each(function() {
+           //     if ($(this).val() == '') {
+           //         $(this).css('border', '2px solid red');
+           //        missingRequired = true;
+           //     }
+           // });
 
             if (missingRequired) {
                 throw EALang['fields_are_required'];
             }
 
             // Validate email address.
-            if (!GeneralFunctions.validateEmail($('#email').val())) {
-                $('#email').css('border', '2px solid red');
-                throw EALang['invalid_email'];
-            }
+            //if (!GeneralFunctions.validateEmail($('#email').val())) {
+            //    $('#email').css('border', '2px solid red');
+            //    throw EALang['invalid_email'];
+            //}
 
             return true;
 
@@ -401,6 +402,11 @@
         $('#city').val(job.customer.city);
         $('#zip-code').val(job.customer.zip_code);
         $('#notes').val(job.notes);
+        $('#cust_notes').val(job.customer.notes);
+        $('#cust_name').html("Name: " + job.customer.first_name + " " + job.customer.last_name);
+        $('#cust_address').html("Address: " + job.customer.address + " " + job.customer.city + " " + job.customer.zip_code);
+        $('#cust_email').html("Email: " + job.customer.email);
+        $('#cust_phone').html("Phone: " + job.customer.phone_number);
 
         $.each(job.appointments, function(index, appointment) {
             var start = GeneralFunctions.formatDate(Date.parse(appointment.start_datetime), GlobalVariables.dateFormat, true);
