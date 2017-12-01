@@ -218,6 +218,9 @@
                         <h3 class="frame-title"><?php echo $this->lang->line('step_two_title'); ?></h3>
 
                         <div class="frame-content row">
+                            <div class="col-xs-12">
+                                <p><?php echo nl2br($this->settings_model->get_setting('cm_appointment_greeting')); ?></p>
+                            </div>
                             <div class="col-xs-12 col-sm-6">
                                 <div id="select-date"></div>
                             </div>
