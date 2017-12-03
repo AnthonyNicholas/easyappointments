@@ -44,6 +44,10 @@
             <li role="representation" class="business-logic-tab tab"><a><?php echo $this->lang->line('business_logic'); ?></a></li>
         <?php endif ?>
 
+        <?php if ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE): ?>
+            <li role="representation" class="custom-messages-tab tab"><a><?php echo $this->lang->line('custom_messages'); ?></a></li>
+        <?php endif ?>
+
         <?php if ($privileges[PRIV_USER_SETTINGS]['view'] == TRUE): ?>
             <li role="representation" class="user-tab tab"><a><?php echo $this->lang->line('current_user'); ?></a></li>
         <?php endif ?>
@@ -316,6 +320,59 @@
                             <tbody>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+
+    <?php
+        // --------------------------------------------------------------
+        //
+        // CUSTOM MESSAGES TAB
+        //
+        // --------------------------------------------------------------
+    ?>
+    <?php $hidden = ($privileges[PRIV_SYSTEM_SETTINGS]['view'] == TRUE) ? '' : 'hidden'; ?>
+    <div id="custom-messages" class="tab-content <?php echo $hidden; ?>">
+        <form>
+            <fieldset>
+                <legend>
+                    <?php echo $this->lang->line('custom_messages'); ?>
+                    <?php if ($privileges[PRIV_SYSTEM_SETTINGS]['edit'] == TRUE): ?>
+                    <button type="button" class="save-settings btn btn-primary btn-xs"
+                            title="<?php echo $this->lang->line('save'); ?>">
+                        <span class="glyphicon glyphicon-floppy-disk"></span>
+                        <?php echo $this->lang->line('save'); ?>
+                    </button>
+                    <?php endif ?>
+                </legend>
+
+                <div class="wrapper row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="appointment-greeting"><?php echo $this->lang->line('appointment_greeting'); ?></label>
+                            <textarea id="appointment-greeting" data-field="cm_appointment_greeting" class="form-control" rows="3"></textarea>
+                            <span class="help-block">
+                                <?php echo $this->lang->line('appointment_greeting_hint'); ?>
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointment-confirmed"><?php echo $this->lang->line('appointment_confirm'); ?></label>
+                            <textarea id="appointment-confirmed" data-field="cm_appointment_confirmed" class="form-control" rows="3"></textarea>
+                            <span class="help-block">
+                                <?php echo $this->lang->line('appointment_confirm_hint'); ?>
+                            </span>
+                        </div>
+                        <div class="form-group">
+                            <label for="appointment-request"><?php echo $this->lang->line('appointment_request'); ?></label>
+                            <textarea id="appointment-request" data-field="cm_appointment_request" class="form-control" rows="3"></textarea>
+                            <span class="help-block">
+                                <?php echo $this->lang->line('appointment_request_hint'); ?>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
                     </div>
                 </div>
             </fieldset>

@@ -436,9 +436,9 @@ class Appointments extends CI_Controller {
                 $email = new \EA\Engine\Notifications\Email($this, $this->config->config);
 
                 if ($post_data['manage_mode'] == FALSE) {
-                    $customer_title = new Text($this->lang->line('appointment_booked'));
-                    $customer_message = new Text($this->lang->line('thank_you_for_appointment'));
-                    $provider_title = new Text($this->lang->line('appointment_added_to_your_plan'));
+                    $customer_title = new Text($this->lang->line('appointment_requested'));
+                    $customer_message = new Text($this->lang->line('thank_you_for_request'));
+                    $provider_title = new Text($this->lang->line('appointment_request_received'));
                     $provider_message = new Text($this->lang->line('appointment_link_description'));
 
                 } else {
@@ -522,7 +522,7 @@ class Appointments extends CI_Controller {
 			for ($i=1; $i<=$number_of_days; $i++) {
 				$current_date = new DateTime($selected_date->format('Y-m') . '-' . $i);
 
-				if ($current_date < new DateTime(date('Y-m-d 00:00:00'))) { // Past dates become immediately unavailable.
+				if ($current_date < new DateTime(date('Y-m-d 00:00:00', strtotime('+2 days')))) { // book at least one day in advance
 					$unavailable_dates[] = $current_date->format('Y-m-d');
 					continue;
 				}

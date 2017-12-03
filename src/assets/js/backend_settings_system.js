@@ -81,6 +81,14 @@
             value: $('#require-captcha').hasClass('active') === true ? '1' : '0'
         });
 
+        // Custom messages tab
+        $('#custom-messages').find('input, textarea').each(function() {
+            settings.push({
+                name: $(this).attr('data-field'),
+                value: $(this).val()
+            });
+        });
+
         // Business Logic Tab
         settings.push({
             name: 'company_working_plan',

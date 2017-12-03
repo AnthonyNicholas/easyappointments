@@ -52,6 +52,7 @@ window.BackendSettings = window.BackendSettings || {};
         // Apply setting values from database.
         $.each(GlobalVariables.settings.system, function(index, setting) {
             $('input[data-field="' + setting.name + '"]').val(setting.value);
+            $('textarea[data-field="' + setting.name + '"]').val(setting.value);
             $('select[data-field="' + setting.name + '"]').val(setting.value);
         });
 
@@ -113,8 +114,8 @@ window.BackendSettings = window.BackendSettings || {};
 
         // Apply Privileges
         if (GlobalVariables.user.privileges.system_settings.edit == false) {
-            $('#general, #business-logic').find('select, input, textarea').prop('readonly', true);
-            $('#general, #business-logic').find('button').prop('disabled', true);
+            $('#general, #business-logic, #custom-messages').find('select, input, textarea').prop('readonly', true);
+            $('#general, #business-logic, #custom-messages').find('button').prop('disabled', true);
         }
 
         if (GlobalVariables.user.privileges.user_settings.edit == false) {
@@ -153,6 +154,9 @@ window.BackendSettings = window.BackendSettings || {};
                 settings = new SystemSettings();
             } else if ($(this).hasClass('business-logic-tab')) {
                 $('#business-logic').show();
+                settings = new SystemSettings();
+            } else if ($(this).hasClass('custom-messages-tab')) {
+                $('#custom-messages').show();
                 settings = new SystemSettings();
 
             } else if ($(this).hasClass('user-tab')) {
