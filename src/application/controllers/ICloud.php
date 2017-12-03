@@ -86,7 +86,7 @@ class ICloud extends CI_Controller {
             $service = $this->services_model->get_row($appointment['id_services']);
             $customer = $this->customers_model->get_row($appointment['id_users_customer']);
             $custName = $customer['first_name']. " " . $customer['last_name'];
-            $custAddress = $customer['address']." ".$customer['city']." ".$customer['zip_code'];   
+            $custAddress = $customer['address']." ".$customer['city']." VIC ".$customer['zip_code'];   
 
             $output .=
                     "BEGIN:VEVENT\n".
