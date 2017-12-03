@@ -293,6 +293,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
         var html;
         var displayEdit;
         var displayDelete;
+        var displayConfirm;
 
         // Depending where the user clicked the event (title or empty space) we
         // need to use different selectors to reach the parent element.
@@ -335,6 +336,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     ? '' : 'hide';
             displayDelete = (GlobalVariables.user.privileges.appointments.delete == true)
                     ? '' : 'hide';
+            displayConfirm = (event.data['is_confirmed'] != 1) ? displayEdit  : 'hide';
 
             html =
                     '<style type="text/css">'
@@ -359,7 +361,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                         + event.data['customer']['last_name']
                         + '<hr>' +
                     '<center>' +
-                        '<button class="confirm-popover btn btn-success' + displayEdit + '">' + EALang['confirm'] + '</button>' +
+                        '<button class="confirm-popover btn btn-success ' + displayConfirm + '">' + EALang['confirm'] + '</button>' +
                     '</center>' +
                     '<br>' +
                     '<center>' +
@@ -793,6 +795,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                     start: appointment['start_datetime'],
                     end: appointment['end_datetime'],
                     allDay: false,
+                    color: appointment['is_confirmed'] == 1 ? '#35b66f' : '',
                     data: appointment // Store appointment data for later use.
                 };
 
