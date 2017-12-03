@@ -349,6 +349,7 @@ class Appointments extends CI_Controller {
 			$post_data['manage_mode'] = filter_var($post_data['manage_mode'], FILTER_VALIDATE_BOOLEAN);
 
 			$this->load->model('appointments_model');
+			$this->load->model('jobs_model');
             $this->load->model('providers_model');
             $this->load->model('services_model');
             $this->load->model('customers_model');
@@ -381,6 +382,10 @@ class Appointments extends CI_Controller {
 			$appointment['is_unavailable'] = (int)$appointment['is_unavailable']; // needs to be type casted
             $appointment['id'] = $this->appointments_model->add($appointment);
             $appointment['hash'] = $this->appointments_model->get_value('hash', $appointment['id']);
+
+            // Add a job for this appointment
+            $job = array('id_appointments' => $appointment['id']);
+            $this->jobs_model->add($job);
 
             $provider = $this->providers_model->get_row($appointment['id_users_provider']);
             $service = $this->services_model->get_row($appointment['id_services']);

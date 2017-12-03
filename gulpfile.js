@@ -18,7 +18,7 @@ gulp.task('composer', function() {
         '!./src/vendor/index.html'
     ]);
 
-    exec('composer update && composer install --prefer-dist', function (err, stdout, stderr) {
+    exec('composer update --no-dev && composer install --no-dev --prefer-dist', function (err, stdout, stderr) {
         console.log(stdout);
         console.log(stderr);
     });

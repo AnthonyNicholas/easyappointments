@@ -52,6 +52,7 @@ class Backend extends CI_Controller {
         $this->load->model('providers_model');
         $this->load->model('services_model');
         $this->load->model('customers_model');
+        $this->load->model('jobs_model');
         $this->load->model('settings_model');
         $this->load->model('roles_model');
         $this->load->model('user_model');
@@ -118,6 +119,36 @@ class Backend extends CI_Controller {
 
         $this->load->view('backend/header', $view);
         $this->load->view('backend/customers', $view);
+        $this->load->view('backend/footer', $view);
+    }
+
+    /**
+     * Display the backend jobs page.
+     *
+     * In this page the user can manage all the job records of the system.
+     */
+    public function jobs() {
+        $this->session->set_userdata('dest_url', site_url('backend/jobs'));
+    	if (!$this->_has_privileges(PRIV_JOBS)) return;
+
+        $this->load->model('providers_model');
+        $this->load->model('jobs_model');
+        $this->load->model('services_model');
+        $this->load->model('settings_model');
+        $this->load->model('user_model');
+
+        $view['base_url'] = $this->config->item('base_url');
+        $view['user_display_name'] = $this->user_model->get_user_display_name($this->session->userdata('user_id'));
+        $view['active_menu'] = PRIV_JOBS;
+        $view['company_name'] = $this->settings_model->get_setting('company_name');
+        $view['date_format'] = $this->settings_model->get_setting('date_format');
+        $view['jobs'] = $this->jobs_model->get_batch();
+        $view['available_providers'] = $this->providers_model->get_available_providers();
+        $view['available_services'] = $this->services_model->get_available_services();
+        $this->set_user_data($view);
+
+        $this->load->view('backend/header', $view);
+        $this->load->view('backend/jobs', $view);
         $this->load->view('backend/footer', $view);
     }
 

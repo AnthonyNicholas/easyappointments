@@ -1264,6 +1264,182 @@ class Backend_api extends CI_Controller {
             ));
         }
     }
+
+    /**
+     * [AJAX] Filter the job records with the given key string.
+     *
+     * @param string $_POST['key'] The filter key string.
+     *
+     * @return array Returns the search results.
+     */
+    public function ajax_filter_jobs() {
+    	try {
+            if ($this->privileges[PRIV_JOBS]['view'] == FALSE) {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $this->load->model('appointments_model');
+            $this->load->model('services_model');
+            $this->load->model('customers_model');
+            $this->load->model('providers_model');
+	    	$this->load->model('jobs_model');
+
+	    	$key = $this->db->escape_str($_POST['key']);
+            $key = strtoupper($key);
+
+            // ea_users u, ea_appointments a
+	    	$where_clause =
+	    			'(u.first_name LIKE upper("%' . $key . '%") OR ' .
+	    			'u.last_name  LIKE upper("%' . $key . '%") OR ' .
+	    			'u.email LIKE upper("%' . $key . '%") OR ' .
+	    			'u.phone_number LIKE upper("%' . $key . '%") OR ' .
+	    			'u.address LIKE upper("%' . $key . '%") OR ' .
+	    			'u.city LIKE upper("%' . $key . '%") OR ' .
+	    			'u.zip_code LIKE upper("%' . $key . '%") OR ' .
+                    'u.notes LIKE upper("%' . $key . '%") OR ' .
+                    'a.notes LIKE upper("%' . $key . '%")) AND ' .
+                    'ea_jobs.finalised = 0';
+
+            $jobs = $this->jobs_model->get_batch($where_clause);
+
+            foreach($jobs as &$job) {
+                $customer = $this->customers_model->get_row($job['user_id']);
+                $appointment = $this->appointments_model->get_row($job['id_appointments']);                
+                $job['customer'] = $customer;
+                $job['appointment'] = $appointment;
+            }
+
+	    	echo json_encode($jobs);
+
+    	} catch(Exception $exc) {
+    		echo json_encode(array(
+                'exceptions' => array(exceptionToJavaScript($exc))
+            ));
+    	}
+    }
+
+ /**
+     * [AJAX] Save (insert or update) a job record.
+     *
+     * @param array $_POST['job'] JSON encoded array that contains the job's data.
+     */
+    public function ajax_save_job() {
+        try {
+            $this->load->model('jobs_model');
+            $job = json_decode($_POST['job'], true);
+
+            $REQUIRED_PRIV = (!isset($job['id']))
+                    ? $this->privileges[PRIV_JOBS]['add']
+                    : $this->privileges[PRIV_JOBS]['edit'];
+            if ($REQUIRED_PRIV == FALSE) {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $job_id = $this->jobs_model->add($job);
+            echo json_encode(array(
+                'status' => AJAX_SUCCESS,
+                'id' => $job_id
+            ));
+        } catch(Exception $exc) {
+            echo json_encode(array(
+                'exceptions' => array(exceptionToJavaScript($exc))
+            ));
+        }
+    }
+
+    /**
+     * [AJAX] Delete job from database.
+     *
+     * @param numeric $_POST['job_id'] Job record id to be deleted.
+     */
+    public function ajax_delete_job() {
+        try {
+            if ($this->privileges[PRIV_JOBS]['delete'] == FALSE) {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $this->load->model('jobs_model');
+            $this->jobs_model->delete($_POST['job_id']);
+            echo json_encode(AJAX_SUCCESS);
+        } catch(Exception $exc) {
+            echo json_encode(array(
+                'exceptions' => array(exceptionToJavaScript($exc))
+            ));
+        }
+    }
+
+
+    /**
+     * [AJAX] Finalise job in database.
+     *
+     * @param numeric $_POST['job_id'] Job record id to be deleted.
+     */
+    public function ajax_finalise_job() {
+        try {
+            if ($this->privileges[PRIV_JOBS]['edit'] == FALSE) {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $this->load->model('jobs_model');
+            $job = $this->jobs_model->get_row($_POST['job_id']);
+            $job['finalised'] = 1;
+            $this->jobs_model->add($job);
+            echo json_encode(AJAX_SUCCESS);
+        } catch(Exception $exc) {
+            echo json_encode(array(
+                'exceptions' => array(exceptionToJavaScript($exc))
+            ));
+        }
+    }
+
+
+
+    /**
+     * [AJAX] Register the appointment to the database.
+     *
+     */
+    public function ajax_notify_customer() {
+        // Send notification sms to customer
+        try {
+            if ($this->privileges[PRIV_JOBS]['edit'] == FALSE) {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $this->load->model('jobs_model');
+            $this->load->model('customers_model');
+            $job = $this->jobs_model->get_row($_POST['job_id']);
+            
+            if (!empty($job['smsSentDate'])){
+                throw new Exception('SMS already sent to this Customer');
+            }
+
+            $customer = $this->customers_model->get_row($_POST['customer_id']);
+
+            // check these are valid and smss can be send
+
+            $this->config->load('sms');
+            $sms = new \EA\Engine\Notifications\Sms($this, $this->config->config);
+
+            $customer_message = new Text('Your bike is ready. Expect a call to arrange dropoff.');
+
+            $sms->sendNotification($customer, $customer_message);
+            echo json_encode(AJAX_SUCCESS);
+            
+            // store smsSentDate in the database
+
+            $dateTime = new DateTime();
+            $job['smsSentDate'] = $dateTime->format("Y-m-d H:i:s");
+            $this->jobs_model->add($job);
+        
+        } catch(Exception $exc) {
+            echo json_encode(array(
+                'exceptions' => array(exceptionToJavaScript($exc))
+            ));
+        }
+
+
+    }
+
 }
 
 /* End of file backend_api.php */
