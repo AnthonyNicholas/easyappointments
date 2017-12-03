@@ -371,6 +371,13 @@
                                 <?php echo $this->lang->line('appointment_request_hint'); ?>
                             </span>
                         </div>
+                        <div class="form-group">
+                            <label for="appointment-complete"><?php echo $this->lang->line('appointment_complete'); ?></label>
+                            <textarea id="appointment-complete" data-field="cm_appointment_complete" class="form-control" rows="3"></textarea>
+                            <span class="help-block">
+                                <?php echo $this->lang->line('appointment_complete_hint'); ?>
+                            </span>
+                        </div>
                     </div>
                     <div class="col-md-6">
                     </div>

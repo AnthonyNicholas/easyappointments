@@ -207,6 +207,9 @@ class Backend_api extends CI_Controller {
      */
     public function ajax_confirm_appointment() {
         try {
+            if ($this->privileges[PRIV_APPOINTMENTS]['edit'] == FALSE) {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
         	$this->load->model('appointments_model');
         	$this->load->model('providers_model');
         	$this->load->model('services_model');
@@ -224,6 +227,9 @@ class Backend_api extends CI_Controller {
             	'company_email' => $this->settings_model->get_setting('company_email')
             );
 
+            if ($appointment['is_confirmed'] == 1) {
+                throw new Exception('This appointment has already been confirmed.');
+            }
             // Mark appointment as confirmed
             $appointment['is_confirmed'] = 1;
             $this->appointments_model->add($appointment);
@@ -231,6 +237,9 @@ class Backend_api extends CI_Controller {
             // :: SEND EMAIL NOTIFICATIONS TO PROVIDER AND CUSTOMER
             try {
                 $this->config->load('email'); 
+                $this->config->load('sms');
+                $sms = new \EA\Engine\Notifications\Sms($this, $this->config->config);
+
                 $email = new \EA\Engine\Notifications\Email($this, $this->config->config);
 
                 $send_provider = $this->providers_model
@@ -246,10 +255,13 @@ class Backend_api extends CI_Controller {
 
                 $send_customer = $this->settings_model->get_setting('customer_notifications');
 
+                $customer_sms = $this->settings_model->get_setting('cm_appointment_confirmed');
+
 				if ((bool)$send_customer === TRUE) {
                     $email->sendAppointmentDetails($appointment, $provider,
                             $service, $customer, $company_settings, $customer_title,
                             $customer_message, $customer_link, new Email($customer['email']));
+                    $sms->sendNotification($customer, $customer_sms);
                 }
 
                 if ($send_provider == TRUE) {
@@ -1483,6 +1495,7 @@ class Backend_api extends CI_Controller {
 
             $this->load->model('jobs_model');
             $this->load->model('customers_model');
+            $this->load->model('settings_model');
             $job = $this->jobs_model->get_row($_POST['job_id']);
             
             if (!empty($job['smsSentDate'])){
@@ -1496,7 +1509,8 @@ class Backend_api extends CI_Controller {
             $this->config->load('sms');
             $sms = new \EA\Engine\Notifications\Sms($this, $this->config->config);
 
-            $customer_message = new Text('Your bike is ready. Expect a call to arrange dropoff.');
+            // $customer_message = new Text('Your bike is ready. Expect a call to arrange dropoff.');
+            $customer_message = $this->settings_model->get_setting('cm_appointment_complete');
 
             $sms->sendNotification($customer, $customer_message);
             echo json_encode(AJAX_SUCCESS);
