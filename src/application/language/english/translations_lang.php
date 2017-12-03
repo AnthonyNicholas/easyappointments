@@ -291,3 +291,7 @@ $lang['appointment_confirm'] = 'Appointment Confirm';
 $lang['appointment_confirm_hint'] = 'Appointment confirmation SMS sent to user';
 $lang['appointment_greeting'] = 'Appointment Greeting';
 $lang['appointment_greeting_hint'] = 'Text displayed to user at the beginning of an appointment request';
+$lang['job_notes'] = 'Job Notes';
+$lang['cust_notes'] = 'Customer Notes';
+$lang['cust_details'] = 'Customer Details';
+$lang['job_saved'] = 'Job Saved';

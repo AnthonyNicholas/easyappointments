@@ -88,7 +88,7 @@
 
             <div class="row">
                 <div class="col-md-6" style="margin-left: 0;">
-                    <h3><?php echo $this->lang->line('details'); ?></h3>
+                    <h3><?php echo $this->lang->line('cust_details'); ?></h3>
                     <div id="form-message" class="alert" style="display:none;"></div>
 
                     <div class="form-group">
@@ -134,7 +134,6 @@
                     <center><em id="form-message" class="text-error">
                         <?php echo $this->lang->line('fields_are_required'); ?></em></center>
                 </div>
-
                 <div class="col-md-5">
                     <h3><?php echo $this->lang->line('appointments'); ?></h3>
                     <div id="customer-appointments"></div>
