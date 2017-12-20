@@ -636,8 +636,29 @@ class Appointments extends CI_Controller {
 		$this->load->model('appointments_model');
 	    $this->load->model('providers_model');
 
+        // Alternative provider id for date specific working times
+        $alt_provider_id =  NULL;
+
+        // Get any date specific working plan for this date
+        $date_specific = json_decode($this->providers_model->get_setting('date_specific', $provider_id, TRUE));
+        
+        foreach ($date_specific as $date_range) {
+            $range_start = strtotime($date_range->start);
+            $range_end = strtotime($date_range->end); // End date inclusive
+            $selected_timestamp = strtotime($selected_date);
+
+            // if we are within a date specific work zone, use this providers plan instead
+            if ( $selected_timestamp >= $range_start && $selected_timestamp <= $range_end ) {
+                $alt_provider_id = $date_range->plan_prov_id; 
+                break; // the first entry rules
+            }
+        }
+
 	    // Get the provider's working plan and reserved appointments.
-	    $working_plan = json_decode($this->providers_model->get_setting('working_plan', $provider_id), TRUE);
+        if ($alt_provider_id == NULL)
+            $working_plan = json_decode($this->providers_model->get_setting('working_plan', $provider_id), TRUE);
+        else
+            $working_plan = json_decode($this->providers_model->get_setting('working_plan', $alt_provider_id), TRUE);
 
 	    $where_clause = array(
 	        'id_users_provider' => $provider_id
