@@ -9,6 +9,8 @@
 <script type="text/javascript"
         src="<?php echo $base_url; ?>/assets/js/working_plan.js"></script>
 <script type="text/javascript"
+        src="<?php echo $base_url; ?>/assets/js/date_specific_hours.js"></script>
+<script type="text/javascript"
         src="<?php echo $base_url; ?>/assets/ext/jquery-ui/jquery-ui-timepicker-addon.js"></script>
 <script type="text/javascript"
         src="<?php echo $base_url; ?>/assets/ext/jquery-jeditable/jquery.jeditable.min.js"></script>
@@ -447,6 +449,35 @@
                                 <td><input type="text" id="sunday-end" class="work-end" /></td>
                             </tr>
                         </tbody>
+                    </table>
+
+                    <br>
+
+                    <h3><?php echo $this->lang->line('date_specific_hours');?></h3>
+
+                    <span class="help-block">
+                        <?php echo $this->lang->line('add_date_specific_hours');?>
+                    </span>
+
+                    <div>
+                        <button type="button" class="add-date-specific-hours btn btn-primary">
+                            <span class="glyphicon glyphicon-plus"></span>
+                            <?php echo $this->lang->line('add_date_range');?>
+                        </button>
+                    </div>
+
+                    <br>
+
+                    <table class="date-specific-hours table table-striped">
+                        <thead>
+                            <tr>
+                                <th><?php echo $this->lang->line('working_plan');?></th>
+                                <th><?php echo $this->lang->line('start');?></th>
+                                <th><?php echo $this->lang->line('end');?></th>
+                                <th><?php echo $this->lang->line('actions');?></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
                     </table>
 
                     <br>

@@ -43,6 +43,7 @@ window.BackendUsers = window.BackendUsers || {};
      * @type {WorkingPlan}
      */
     exports.wp = {};
+    exports.dsh = {};
 
     /**
      * Initialize the backend users page.
@@ -65,6 +66,9 @@ window.BackendUsers = window.BackendUsers || {};
 
         exports.wp = new WorkingPlan();
         exports.wp.bindEventHandlers();
+
+        exports.dsh = new DateSpecificHours();
+        exports.dsh.bindEventHandlers();
 
         // Fill the services and providers list boxes.
         var html = '<div class="col-md-12">';

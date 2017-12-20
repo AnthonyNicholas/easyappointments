@@ -93,6 +93,7 @@
             $('#provider-password, #provider-password-confirm').addClass('required');
             $('#provider-notifications').prop('disabled', false);
             $('#providers').find('.add-break, .edit-break, .delete-break, #reset-working-plan').prop('disabled', false);
+            $('#providers').find('.add-date-specific-hours, .edit-date-specific-hours, .delete-date-specific-hours').prop('disabled', false);
             $('#provider-services input[type="checkbox"]').prop('disabled', false);
             $('#providers input[type="checkbox"]').prop('disabled', false);
 
@@ -115,6 +116,7 @@
             $('#provider-notifications').prop('disabled', false);
             $('#provider-services input[type="checkbox"]').prop('disabled', false);
             $('#providers').find('.add-break, .edit-break, .delete-break, #reset-working-plan').prop('disabled', false);
+            $('#providers').find('.add-date-specific-hours, .edit-date-specific-hours, .delete-date-specific-hours').prop('disabled', false);
             $('#providers input[type="checkbox"]').prop('disabled', false);
             BackendUsers.wp.timepickers(false);
         });
@@ -156,6 +158,7 @@
                 settings: {
                     username: $('#provider-username').val(),
                     working_plan: JSON.stringify(BackendUsers.wp.get()),
+                    date_specific: JSON.stringify(BackendUsers.dsh.get()),
                     notifications: $('#provider-notifications').hasClass('active'),
                     calendar_view: $('#provider-calendar-view').val()
                 }
@@ -226,6 +229,7 @@
          */
         $('#providers').on('click', '#reset-working-plan', function() {
             $('.breaks tbody').empty();
+            $('.date-specific-hours tbody').empty();
             $('.work-start, .work-end').val('');
             BackendUsers.wp.setup(GlobalVariables.workingPlan);
             BackendUsers.wp.timepickers(false);
@@ -353,11 +357,13 @@
         $('#provider-services input[type="checkbox"]').prop('disabled', true);
         $('#providers .required').css('border', '');
         $('#provider-password, #provider-password-confirm').css('border', '');
-        $('#providers .add-break, #reset-working-plan').prop('disabled', true);
+        $('#providers .add-break, .add-date-specific-hours, #reset-working-plan').prop('disabled', true);
         BackendUsers.wp.timepickers(true);
+        BackendUsers.dsh.timepickers(true);
         $('#providers .working-plan input[type="text"]').timepicker('destroy');
         $('#providers .working-plan input[type="checkbox"]').prop('disabled', true);
         $('.breaks').find('.edit-break, .delete-break').prop('disabled', true);
+        $('.date-specific-hours').find('.edit-date-specific-hours, .delete-date-specific-hours').prop('disabled', true);
 
         $('#edit-provider, #delete-provider').prop('disabled', true);
         $('#providers .record-details').find('input, textarea').val('');
@@ -365,6 +371,7 @@
         $('#provider-services input[type="checkbox"]').prop('checked', false);
         $('#provider-services a').remove();
         $('#providers .breaks tbody').empty();
+        $('#providers .date-specific-hours tbody').empty();
     };
 
     /**
@@ -419,9 +426,13 @@
 
         // Display working plan
         $('#providers .breaks tbody').empty();
+        $('#providers .date-specific-hours tbody').empty();
         var workingPlan = $.parseJSON(provider.settings.working_plan);
+        var dateSpecific = $.parseJSON(provider.settings.date_specific);
         BackendUsers.wp.setup(workingPlan);
+        BackendUsers.dsh.setup(dateSpecific);
         $('.breaks').find('.edit-break, .delete-break').prop('disabled', true);
+        $('.date-specific-hours').find('.edit-date-specific-hours, .delete-date-specific-hours').prop('disabled', true);
     };
 
     /**

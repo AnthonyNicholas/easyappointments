@@ -297,3 +297,6 @@ $lang['job_notes'] = 'Job Notes';
 $lang['cust_notes'] = 'Customer Notes';
 $lang['cust_details'] = 'Customer Details';
 $lang['job_saved'] = 'Job Saved';
+$lang['date_specific_hours'] = 'Date Specific Hours';
+$lang['add_date_range'] = 'Add Date Range';
+$lang['add_date_specific_hours'] = 'Set a particular working plan for certain dates. Start and end dates are inclusive.';

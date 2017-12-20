@@ -118,6 +118,7 @@ CREATE TABLE IF NOT EXISTS `ea_user_settings` (
   `password` varchar(512) DEFAULT NULL,
   `salt` varchar(512) DEFAULT NULL,
   `working_plan` text,
+  `date_specific` text,
   `notifications` tinyint(4) DEFAULT '0',
   `google_sync` tinyint(4) DEFAULT '0',
   `google_token` text,
