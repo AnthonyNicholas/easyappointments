@@ -206,7 +206,7 @@ class Jobs_Model extends CI_Model {
         $this->db->join('ea_users u', 'a.id_users_customer = u.id', 'left outer');
         if (!empty($where_clause))
             $this->db->where($where_clause);
-        $this->db->order_by('a.book_datetime', 'DESC');
+        $this->db->order_by('a.start_datetime', 'ASC');
         return $this->db->get()->result_array();
     }
 
