@@ -200,7 +200,7 @@ class Appointments extends CI_Controller {
                 $send_provider = filter_var($this->providers_model
                             ->get_setting('notifications', $provider['id']), FILTER_VALIDATE_BOOLEAN);
 
-                if ($send_provider === TRUE) {
+                if ((bool)$send_provider === TRUE) {
                     $email->sendDeleteAppointment($appointment, $provider,
                             $service, $customer, $company_settings, new Email($provider['email']),
                             new Text($_POST['cancel_reason']));
@@ -209,7 +209,7 @@ class Appointments extends CI_Controller {
 				$send_customer = filter_var($this->settings_model->get_setting('customer_notifications'),
 						FILTER_VALIDATE_BOOLEAN);
 
-				if ($send_customer === TRUE) {
+				if ((bool)$send_customer === TRUE) {
 					$email->sendDeleteAppointment($appointment, $provider,
 							$service, $customer, $company_settings, new Email($customer['email']),
 							new Text($_POST['cancel_reason']));
@@ -454,7 +454,7 @@ class Appointments extends CI_Controller {
 				$send_customer = filter_var($this->settings_model->get_setting('customer_notifications'),
 						FILTER_VALIDATE_BOOLEAN);
 
-				if ($send_customer === TRUE) {
+				if ((bool)$send_customer === TRUE) {
 					$email->sendAppointmentDetails($appointment, $provider,
 							$service, $customer,$company_settings, $customer_title,
 							$customer_message, $customer_link, new Email($customer['email']));
@@ -463,12 +463,15 @@ class Appointments extends CI_Controller {
 				$send_provider = filter_var($this->providers_model ->get_setting('notifications', $provider['id']),
 						FILTER_VALIDATE_BOOLEAN);
 
-                if ($send_provider === TRUE) {
+                if ((bool)$send_provider === TRUE) {
                     $email->sendAppointmentDetails($appointment, $provider,
                             $service, $customer, $company_settings, $provider_title,
                             $provider_message, $provider_link, new Email($provider['email']));
                 }
             } catch(Exception $exc) {
+                echo 'ERROR';
+                var_dump($exc->getMessage());
+                die();
                 log_message('error', $exc->getMessage());
                 log_message('error', $exc->getTraceAsString());
             }
