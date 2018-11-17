@@ -83,6 +83,9 @@ class ICloud extends CI_Controller {
         // loop over events
         foreach ($appointments as $appointment){
         
+            if ( $appointment['is_unavailable'] == 1)
+                continue;
+
             $service = $this->services_model->get_row($appointment['id_services']);
             $customer = $this->customers_model->get_row($appointment['id_users_customer']);
             $custName = $customer['first_name']. " " . $customer['last_name'];
@@ -93,10 +96,10 @@ class ICloud extends CI_Controller {
                     "SUMMARY: "."Bike Service - Waverley cycles:"."\n".
                     "UID:".$appointment['id']."\n".
                     "STATUS: CONFIRMED\n". 
-                    "DTSTART:" . date(DATE_ICAL, strtotime($appointment['start_datetime'])) . "\n".
-                    "DTEND:" . date(DATE_ICAL, strtotime($appointment['end_datetime'])) . "\n".
-                    "LOCATION: Cust. Address: ".$custAddress."\n".
-                    "DESCRIPTION:"."SERVICE TYPE: ".$service['name']."\\nCUST NAME: ".$custName."\\nCUST PHONE: ".$customer['phone_number']."\\nCUST EMAIL: ".$customer['email']."\\nCUST NOTES: ".$customer['notes']."\n".
+                    "DTSTART:" . gmdate(DATE_ICAL, strtotime($appointment['start_datetime'])) . "\n".
+                    "DTEND:" . gmdate(DATE_ICAL, strtotime($appointment['end_datetime'])) . "\n".
+                    "LOCATION: Pickup Address: ".$custAddress."\n".
+                    "DESCRIPTION:"."SERVICE TYPE: ".$service['name']."\\nCUST NAME: ".$custName."\\nCUST PHONE: ".$customer['phone_number']."\\nCUST EMAIL: ".$customer['email']."\\nNOTES: ".$appointment['notes']."\n".
                     "END:VEVENT\n";
         }
 
