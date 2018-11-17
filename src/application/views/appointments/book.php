@@ -226,6 +226,7 @@
                             </div>
 
                             <div class="col-xs-12 col-sm-6">
+                                <h4 style="text-align:center;" id="selected-date"></h4>
                                 <?php // Available hours are going to be fetched via ajax call. ?>
                                 <div id="available-hours"></div>
                             </div>

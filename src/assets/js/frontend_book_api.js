@@ -35,7 +35,19 @@ window.FrontendBookApi = window.FrontendBookApi || {};
      * @param {String} selDate The selected date of which the available hours we need to receive.
      */
     exports.getAvailableHours = function(selDate) {
+        $('#selected-date').empty();
         $('#available-hours').empty();
+
+        // Print the currently selected date above times
+        var selDateText;
+        try {
+            selDateText = $.datepicker.formatDate("DD, M d", $.datepicker.parseDate('dd-mm-yy', selDate));
+        } catch(e){
+            // this date format was not valid
+            selDateText = $.datepicker.formatDate("DD, M d", new Date(selDate));
+        }
+
+        $('#selected-date').html(selDateText);
 
         // Find the selected service duration (it is going to be send within the "postData" object).
         var selServiceDuration = 15; // Default value of duration (in minutes).
