@@ -179,6 +179,7 @@
          */
         $('#finalise-job').click(function() {
             var payload = {
+                customer_id: $('#customer-id').val(),
                 job_id: $('#job-id').val()
             };
 
@@ -254,7 +255,8 @@
         var postUrl = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_finalise_job';
         var postData = {
             csrfToken: GlobalVariables.csrfToken,
-            job_id: payload.job_id
+            job_id: payload.job_id,
+            customer_id: payload.customer_id
         };
 
         $.post(postUrl, postData, function(response) {
@@ -477,7 +479,7 @@
     JobsHelper.prototype.getFilterHtml = function(job) {
         var name = job.customer.first_name + ' ' + job.customer.last_name;
         var info = job.customer.email;
-        var appointmentDate = new Date(job.appointment.book_datetime);
+        var appointmentDate = $.datepicker.parseDateTime("yy-mm-dd", "HH:mm:ss", job.appointment.start_datetime);
         info = (job.customer.phone_number != '' && job.customer.phone_number != null)
                 ? info + ', ' + job.customer.phone_number : info;
 
@@ -488,7 +490,7 @@
                     '</strong><br>' +
                     info +
                     '<br>' +
-                    'Pickup Appt: ' + appointmentDate.toDateString() +
+                    'Pickup Appt: ' + appointmentDate.toDateString() + ' ' + appointmentDate.getHours() + ':' + ('0'+appointmentDate.getMinutes()).slice(-2) +
                 '</div><hr>';
 
         return html;
