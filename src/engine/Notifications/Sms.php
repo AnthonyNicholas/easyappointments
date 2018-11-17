@@ -87,12 +87,33 @@ class Sms {
      * to the appointment record.
      * @param \EA\Engine\Types\Email $recipientEmail The recipient sms address.
      */
-    public function sendNotification(array $customer, Text $messageText) {
+    public function sendNotification(array $appointment, array $customer, Text $messageText) {
+
+        $valid_mobile = preg_replace('/[^0-9]/', '', $customer['phone_number']);
+        if ( strlen($valid_mobile) == 10 ) {
+            $valid_mobile = ltrim($valid_mobile, '0');
+            $valid_mobile = '+61'.$valid_mobile;
+        } else if ( strlen($valid_mobile) == 11 && substr($valid_mobile, 0, 2) == '61' ) {
+            $valid_mobile = '+'.$valid_mobile;
+        } else {
+            throw new \RuntimeException('Mobile number is invalid. SMS could not be sent.');
+        }
+
+        if (count($appointment) > 0)
+        {
+            $replaceArray = array(
+                '$appointment_start_date_time' => date('D jS M \a\t g:ia', strtotime($appointment['start_datetime'])),
+                '$appointment_end_date' => date('d/m/Y H:i', strtotime($appointment['end_datetime'])),
+                '$customer_address' => $customer['address'] . ' ' . $customer['city'] . ' VIC ' . $customer['zip_code']
+            );
+
+            $messageText = new Text($this->_replaceTemplateVariables($replaceArray, $messageText->get()));
+        }
 
         // https://twilio.github.io/twilio-php/
         $texter = new \Twilio\Rest\Client($this->config['twilio_sid'], $this->config['twilio_token']);
         $message = $texter->messages->create(
-            $customer['phone_number'], // we replace with customer number
+            $valid_mobile, // we replace with customer number
             array(
                 'from' => '+61451562962',
                 'body' => $messageText->get()
